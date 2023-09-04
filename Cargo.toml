@@ -1,0 +1,17 @@
+[package]
+name = "sot-manager"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+# tokio + native-tls
+
+tokio = { version = "1", features = ["full"] }
+sqlx = { version = "0.7", features = [ "postgres", "runtime-tokio", "tls-native-tls" ] }
+rhai = { version = "1.15.1", features = [ "sync", "serde" ] }
+reqwest = { version = "0.11.18", features = ["blocking", "json"] }
+serde_json = "1.0"
+smartstring = { version = "*", features = ["serde"] }
+
