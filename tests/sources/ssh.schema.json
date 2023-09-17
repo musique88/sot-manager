@@ -1,0 +1,18 @@
+{
+	"type": "object",
+	"properties": {
+		"ip_address": {
+			"type": "string",
+			"pattern": "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$",
+			"required": true
+		},
+		"username": {
+			"type": "string"
+			"required": true
+		},
+		"password": {
+			"type": "string"
+			"required": true
+		}
+	}
+}

@@ -4,6 +4,10 @@ use std::{sync::Arc, error::Error};
 use rhai::Array;
 use serde_json::json;
 
+fn ssh_connect(ip: &str, username: &str, password: &str, commands: Vec<&str>) -> String {
+    "".to_string()
+}
+
 fn get(url: &str) -> Result<Array, Box<EvalAltResult>> {
     match reqwest::blocking::get(url) {
         Ok(res) => {
@@ -131,7 +135,10 @@ impl Script {
 
 impl Queryable for Script {
     fn query(&mut self, info: rhai::Map) -> ComparableInfo {
-        let engine = Engine::new();
+        let mut engine = Engine::new();
+        engine.register_fn("get", get);
+        engine.register_fn("post_json", post_json);
+        engine.register_fn("post_text", post_text);
         match engine.compile(self.script.clone()) {
             Ok(ast) => {
                 let mut scope = Scope::new();
@@ -162,8 +169,7 @@ async fn main() -> Result<(), sqlx::Error> {
 
     let test_script = "\
         fn run(run_information) { \
-            print(run_information.ip);\
-            print(run_information.whatever);\
+            print(get(run_information.ip)); 
             #{test: 23}
         }\
         ";
@@ -171,12 +177,11 @@ async fn main() -> Result<(), sqlx::Error> {
     tokio::task::spawn_blocking(move | | -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         let mut script = Script::new("aaa".to_string(), test_script.to_string()).unwrap();
         let mut map = rhai::Map::new();
-        map.insert("ip".into(), "1.1.1.1".into());
+        map.insert("ip".into(), "http://google.com".into());
         map.insert("whatever".into(), "a".into());
         println!("{:?}", script.query(map));
         Ok(())
     });
-
     Ok(())
 }
 
